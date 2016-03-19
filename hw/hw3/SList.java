@@ -127,13 +127,26 @@ public class SList {
         cur = p;
       }
     }
+
+    /*
+     * update size
+     *
+    */
+
     if (cur != null) {
       cur.next = null;
     }
+    this.size = 0;
+    p = head;
+    while (p != null) {
+        size++;
+        p = p.next;
+    }
+
   }
 
   /**
-   *  twin() takes this list and doubles its length by replacing each node
+   * *  twin() takes this list and doubles its length by replacing each node
    *  with two consecutive nodes referencing the same item.
    *
    *  For example, if the input list is [ 3 7 4 2 2 ], the
@@ -153,6 +166,7 @@ public class SList {
       node.next = p;
       cur = p;
     }
+    this.size = this.size << 1;
   }
 
   /**
