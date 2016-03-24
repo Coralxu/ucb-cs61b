@@ -1,0 +1,1 @@
+#### 关于JAVA的多态和继承可以参考[这个](http://www.1point3acres.com/bbs/forum.php?mod=viewthread&tid=99543)
