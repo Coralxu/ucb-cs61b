@@ -30,9 +30,10 @@ public class RunLengthEncoding implements Iterable {
    *  These variables MUST be private.
    */
 
+  private int width;
+  private int height;
 
-
-
+  private DList list;
   /**
    *  The following methods are required for Part II.
    */
@@ -48,6 +49,9 @@ public class RunLengthEncoding implements Iterable {
 
   public RunLengthEncoding(int width, int height) {
     // Your solution here.
+    this.width = width;
+    this.height = height;
+    list = new DList();
   }
 
   /**
@@ -74,6 +78,16 @@ public class RunLengthEncoding implements Iterable {
   public RunLengthEncoding(int width, int height, int[] red, int[] green,
                            int[] blue, int[] runLengths) {
     // Your solution here.
+    this.width = width;
+    this.height = height;
+    for (int i = 0; i < runLengths.length; ++i) {
+      int[] item = new int[4];
+      item[0] = runLengths[i];
+      item[1] = red[i];
+      item[2] = green[i];
+      item[3] = blue[i];
+      list.insert(item);
+    }
   }
 
   /**
@@ -85,7 +99,7 @@ public class RunLengthEncoding implements Iterable {
 
   public int getWidth() {
     // Replace the following line with your solution.
-    return 1;
+    return this.width;
   }
 
   /**
@@ -96,7 +110,7 @@ public class RunLengthEncoding implements Iterable {
    */
   public int getHeight() {
     // Replace the following line with your solution.
-    return 1;
+    return this.height;
   }
 
   /**
@@ -108,9 +122,10 @@ public class RunLengthEncoding implements Iterable {
    */
   public RunIterator iterator() {
     // Replace the following line with your solution.
-    return null;
+    //return null;
     // You'll want to construct a new RunIterator, but first you'll need to
     // write a constructor in the RunIterator class.
+    return new RunIterator(list);
   }
 
   /**
@@ -121,7 +136,24 @@ public class RunLengthEncoding implements Iterable {
    */
   public PixImage toPixImage() {
     // Replace the following line with your solution.
-    return new PixImage(1, 1);
+    //return new PixImage(1, 1);
+    PixImage pixImage = new PixImage(width, height);
+    int x = 0, y = -1;
+    RunIterator iter = this.iterator();
+    while (iter.hasNext()) {
+      int[] item = iter.next();
+      int num = item[0], red = item[1], green = item[2], blue = item[3];
+      for (int i = 0; i < num; ++i) {
+        y = y + 1;
+        if (y >= height) {
+          x = x + 1;
+          y = y % height;
+        }
+        pixImage.setPixel(x, y, (short)red, (short)green, (short)blue);
+      }
+    }
+    //System.out.println(pixImage);
+    return pixImage;
   }
 
   /**
@@ -135,7 +167,15 @@ public class RunLengthEncoding implements Iterable {
    */
   public String toString() {
     // Replace the following line with your solution.
-    return "";
+    //return "";
+    RunIterator iter = this.iterator();
+    String s = "";
+    while (iter.hasNext()) {
+      int[] item = iter.next();
+      s += "| red, green, blue, num : " + Integer.toString(item[1]) + ", " + Integer.toString(item[2]) + ", " + Integer.toString(item[3]) + " |";
+      s += "\n";
+    }
+    return s;
   }
 
 
@@ -155,7 +195,37 @@ public class RunLengthEncoding implements Iterable {
   public RunLengthEncoding(PixImage image) {
     // Your solution here, but you should probably leave the following line
     // at the end.
+    changeImageToList(image);
     check();
+  }
+
+  private void changeImageToList(PixImage image) {
+    this.width = image.getWidth();
+    this.height = image.getHeight();
+    this.list = new DList();
+    for (int i = 0; i < width; i++) {
+      for (int j = 0; j < height; ++j) {
+        int[] item = new int[4];
+        item[0] = 1;
+        item[1] = (int)image.getRed(i, j);
+        item[2] = (int)image.getGreen(i, j);
+        item[3] = (int)image.getBlue(i, j);
+        list.insert(item);
+      }
+    }
+    DListNode cur = list.getHead();
+    DListNode p = cur.next;
+    while (cur != null && p!= null) {
+      int count = 1;
+      while (p != null && p.item[1] == cur.item[1]) {
+        count++;
+        p = p.next;
+      }
+      cur.next = p;
+      cur.item[0] = count;
+      cur = p;
+      p = p.next;
+    }
   }
 
   /**
@@ -165,6 +235,21 @@ public class RunLengthEncoding implements Iterable {
    */
   public void check() {
     // Your solution here.
+    DListNode cur = list.getHead();
+    boolean flag = true;
+    int length = cur.item[0];
+    while (cur != null && cur.next != null) {
+      if (cur.item[1] == cur.next.item[1]) {
+        flag = false;
+        break;
+      }
+      cur = cur.next;
+      length = length + cur.item[0];
+    }
+    if (!flag || length != width * height) {
+      System.err.println("run-length encoding is not right!");
+      System.exit(0);
+    }
   }
 
 
@@ -188,6 +273,9 @@ public class RunLengthEncoding implements Iterable {
   public void setPixel(int x, int y, short red, short green, short blue) {
     // Your solution here, but you should probably leave the following line
     //   at the end.
+    PixImage pixImage = this.toPixImage();
+    pixImage.setPixel(x, y, red, green, blue);
+    changeImageToList(pixImage);
     check();
   }
 
