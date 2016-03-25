@@ -8,6 +8,7 @@ import list.*;
  **/
 public class Set {
   /* Fill in the data fields here. */
+  private DList list;
 
   /**
    * Set ADT invariants:
@@ -24,6 +25,7 @@ public class Set {
    **/
   public Set() { 
     // Your solution here.
+    list = new DList();
   }
 
   /**
@@ -33,7 +35,7 @@ public class Set {
    **/
   public int cardinality() {
     // Replace the following line with your solution.
-    return 0;
+    return list.length();
   }
 
   /**
@@ -44,8 +46,38 @@ public class Set {
    *
    *  Performance:  runs in O(this.cardinality()) time.
    **/
-  public void insert(Comparable c) {
+  public void insert(Comparable c) throws InvalidNodeException {
     // Your solution here.
+    if (cardinality() == 0) {
+      list.insertFront(c);
+    } else {
+      ListNode cur = list.front();
+      boolean flag = true;
+      boolean isExist = false;
+      while (cur.isValidNode())  {
+        if (c.compareTo(cur.item()) == 0) {
+          isExist = true;
+          break;
+        }
+        ListNode next = cur.next();
+        if (c.compareTo(cur.item()) < 0) {
+          cur.insertBefore(c);
+          break;
+        } else if (next.isValidNode()) {
+          if (c.compareTo(cur.item()) > 0 && c.compareTo(next.item()) < 0) {
+            cur.insertAfter(c);
+            break;
+          }
+        } else {
+          flag = false;
+          break;
+        }
+        cur = next;
+      }
+      if (!isExist && !flag && cur.isValidNode()) {
+        cur.insertAfter(c);
+      }
+    }
   }
 
   /**
@@ -63,8 +95,38 @@ public class Set {
    *  DO NOT MODIFY THE SET s.
    *  DO NOT ATTEMPT TO COPY ELEMENTS; just copy _references_ to them.
    **/
-  public void union(Set s) {
+  public void union(Set s) throws InvalidNodeException {
     // Your solution here.
+    if (s.cardinality() == 0) {
+      return;
+    } else if (cardinality() == 0) {
+      ListNode cur = s.list.front();
+      while (cur.isValidNode()) {
+        list.insertBack(cur.item());
+        cur = cur.next();
+      }
+      return;
+    }
+    ListNode cur1 = list.front();
+    ListNode cur2 = s.list.front();
+    while (cur1.isValidNode() && cur2.isValidNode()) {
+      if (((Comparable)cur2.item()).compareTo(cur1.item()) < 0) {
+        cur1.insertBefore(cur2.item());
+        cur2 = cur2.next();
+      } else if (((Comparable)cur2.item()).compareTo(cur1.item()) == 0) {
+        cur1 = cur1.next();
+        cur2 = cur2.next();
+      } else if (((Comparable)cur2.item()).compareTo(cur1.item()) > 0) {
+        cur1 = cur1.next();
+      }
+    }
+    if (cur2.isValidNode()) {
+      cur1 = list.back();
+      while (cur2.isValidNode()) {
+        cur1.insertAfter(cur2.item());
+        cur2 = cur2.next();
+      }
+    }
   }
 
   /**
@@ -80,8 +142,35 @@ public class Set {
    *  DO NOT CONSTRUCT ANY NEW NODES.
    *  DO NOT ATTEMPT TO COPY ELEMENTS.
    **/
-  public void intersect(Set s) {
+  public void intersect(Set s) throws InvalidNodeException {
     // Your solution here.
+    if (s.cardinality() == 0) {
+      list = new DList();
+      return;
+    } else if (cardinality() == 0) {
+      return;
+    }
+    ListNode cur1 = list.front();
+    ListNode cur2 = s.list.front();
+    while (cur1.isValidNode() && cur2.isValidNode()) {
+      if (((Comparable)cur1.item()).compareTo(cur2.item()) < 0) {
+        ListNode next = cur1.next();
+        cur1.remove();
+        cur1 = next;
+      } else if (((Comparable)cur1.item()).compareTo(cur2.item()) == 0) {
+        cur1 = cur1.next();
+        cur2 = cur2.next();
+      } else {
+        cur2 = cur2.next();
+      }
+    }
+    if (cur1.isValidNode()) {
+      while (cur1.isValidNode()) {
+        ListNode next = cur1.next();
+        cur1.remove();
+        cur1 = next;
+      }
+    }
   }
 
   /**
@@ -101,10 +190,11 @@ public class Set {
    **/
   public String toString() {
     // Replace the following line with your solution.
-    return "";
+    //return "";
+    return list.toString();
   }
 
-  public static void main(String[] argv) {
+  public static void main(String[] argv) throws InvalidNodeException {
     Set s = new Set();
     s.insert(new Integer(3));
     s.insert(new Integer(4));
