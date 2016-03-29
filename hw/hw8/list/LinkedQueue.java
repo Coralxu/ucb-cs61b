@@ -124,12 +124,12 @@ public class LinkedQueue implements Queue {
     String out = "[ ";
     try {
       for (int i = 0; i < size(); i++) {
-	out = out + front() + " ";
-	enqueue(dequeue());
-      }
-    } catch (QueueEmptyException uf) {
-      System.err.println("Error:  attempt to dequeue from empty queue.");
-    }
-    return out + "]";
+       out = out + front() + " ";
+       enqueue(dequeue());
+     }
+   } catch (QueueEmptyException uf) {
+    System.err.println("Error:  attempt to dequeue from empty queue.");
   }
+  return out + "]";
+}
 }
