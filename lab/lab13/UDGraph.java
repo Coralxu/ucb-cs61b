@@ -31,10 +31,10 @@ public class UDGraph
     adjMatrix = new boolean[n][n];
     for (int i = 0; i < vertices; i++ ) {
       for (int j = 0; j < vertices; j++ ) {
-	adjMatrix[i][j] = false;
-      }
-    }
-  }
+       adjMatrix[i][j] = false;
+     }
+   }
+ }
 
   /**
    *  Returns the number of vertices.
@@ -84,11 +84,11 @@ public class UDGraph
   public void addEdge(int origin, int destination) {
     if (validVertex(origin) && validVertex(destination)) {
       if (!adjMatrix[origin][destination]) {
-	adjMatrix[origin][destination] = true;
-        edges++;
-      }
-    }    
-  }
+       adjMatrix[origin][destination] = true;
+       edges++;
+     }
+   }    
+ }
 
   /**
    *  Deletes the edge (origin, destination).  If the edge existed, decrements
@@ -99,11 +99,11 @@ public class UDGraph
   public void removeEdge(int origin, int destination) {
     if (validVertex(origin) && validVertex(destination)) {
       if (adjMatrix[origin][destination]) {
-	adjMatrix[origin][destination] = false;
-	edges--;
-      }
-    }        
-  }
+       adjMatrix[origin][destination] = false;
+       edges--;
+     }
+   }        
+ }
 
   /**
    *  Returns a new UDGraph with the same vertices as "this" UDGraph.
@@ -115,6 +115,15 @@ public class UDGraph
   public UDGraph length2Paths() {
     UDGraph newGraph = new UDGraph(vertices);
     // Put your answer to Part I here.
+    for (int i = 0; i < vertices; ++i) {
+      for (int j = 0; j < vertices; ++j) {
+        for (int k = 0; k < vertices; ++k) {
+          if (adjMatrix[i][k] && adjMatrix[k][j]) {
+            newGraph.addEdge(i, j);
+          }
+        }
+      }
+    }
     return newGraph;
   }
 
@@ -128,6 +137,20 @@ public class UDGraph
   public UDGraph paths(int length) {
     UDGraph newGraph = new UDGraph(vertices);
     // Put your answer to Part II here.
+    if (length == 2) {
+      newGraph = length2Paths();
+    } else {
+      UDGraph g = paths(length - 1);
+      for (int i = 0; i < vertices; ++i) {
+        for (int j = 0; j < vertices; ++j) {
+          for (int k = 0; k < vertices; ++k) {
+            if (g.hasEdge(i, k) && hasEdge(k, j)) {
+              newGraph.addEdge(i, j);
+            }
+          }
+        }
+      }
+    }
     return newGraph;
   }
 
@@ -141,115 +164,115 @@ public class UDGraph
     String s = vertices + " vertices and " + edges + " edges\n";
     for (i = 0; i < vertices; i++) {
       for (j = 0; j < vertices - 1; j++) {
-	s = s + (adjMatrix[i][j] ? "t" : ".")  + " ";
-      }
-      s = s + (adjMatrix[i][j] ? "t" : ".")  + "\n";
-    }
-    return s;
-  }
+       s = s + (adjMatrix[i][j] ? "t" : ".")  + " ";
+     }
+     s = s + (adjMatrix[i][j] ? "t" : ".")  + "\n";
+   }
+   return s;
+ }
 
 
-  public static void main(String[] args) {
+ public static void main(String[] args) {
 
-    System.out.println("\n *** Square the unweighted directed graph! *** \n");
+  System.out.println("\n *** Square the unweighted directed graph! *** \n");
 
     // Create an 11-vertex graph.
-    System.out.println("Creating a graph with 11 vertices");
-    UDGraph graph = new UDGraph(11);
-    graph.addEdge(0, 8);
-    graph.addEdge(1, 0);
-    graph.addEdge(1, 3);
-    graph.addEdge(2, 0);
-    graph.addEdge(3, 2);
-    graph.addEdge(3, 5);
-    graph.addEdge(4, 2);
-    graph.addEdge(4, 5);
-    graph.addEdge(5, 7);
-    graph.addEdge(5, 9);
-    graph.addEdge(6, 4);
-    graph.addEdge(6, 7);
-    graph.addEdge(8, 4);
-    graph.addEdge(8, 6);
-    graph.addEdge(8, 10);
-    graph.addEdge(9, 1);
-    graph.addEdge(10, 6);
+  System.out.println("Creating a graph with 11 vertices");
+  UDGraph graph = new UDGraph(11);
+  graph.addEdge(0, 8);
+  graph.addEdge(1, 0);
+  graph.addEdge(1, 3);
+  graph.addEdge(2, 0);
+  graph.addEdge(3, 2);
+  graph.addEdge(3, 5);
+  graph.addEdge(4, 2);
+  graph.addEdge(4, 5);
+  graph.addEdge(5, 7);
+  graph.addEdge(5, 9);
+  graph.addEdge(6, 4);
+  graph.addEdge(6, 7);
+  graph.addEdge(8, 4);
+  graph.addEdge(8, 6);
+  graph.addEdge(8, 10);
+  graph.addEdge(9, 1);
+  graph.addEdge(10, 6);
 
-    boolean goodJob = true;
+  boolean goodJob = true;
 
-    String t1String = "11 vertices and 17 edges\n. . . . . . . . t . .\n" +
-      "t . . t . . . . . . .\nt . . . . . . . . . .\n. . t . . t . . . . .\n" +
-      ". . t . . t . . . . .\n. . . . . . . t . t .\n. . . . t . . t . . .\n" +
-      ". . . . . . . . . . .\n. . . . t . t . . . t\n. t . . . . . . . . .\n" +
-      ". . . . . . t . . . .\n";
-    System.out.println("\nThe original graph is\n" + graph);
-    if (!t1String.equals(graph.toString())) {
-      System.out.println("Error:  the original graph should be\n" +
-                         t1String);
-      goodJob = false;
-    }
+  String t1String = "11 vertices and 17 edges\n. . . . . . . . t . .\n" +
+  "t . . t . . . . . . .\nt . . . . . . . . . .\n. . t . . t . . . . .\n" +
+  ". . t . . t . . . . .\n. . . . . . . t . t .\n. . . . t . . t . . .\n" +
+  ". . . . . . . . . . .\n. . . . t . t . . . t\n. t . . . . . . . . .\n" +
+  ". . . . . . t . . . .\n";
+  System.out.println("\nThe original graph is\n" + graph);
+  if (!t1String.equals(graph.toString())) {
+    System.out.println("Error:  the original graph should be\n" +
+     t1String);
+    goodJob = false;
+  }
 
     // Do length-2 paths work?
-    String t2String = "11 vertices and 25 edges\n. . . . t . t . . . t\n" +
-      ". . t . . t . . t . .\n. . . . . . . . t . .\nt . . . . . . t . t .\n" +
-      "t . . . . . . t . t .\n. t . . . . . . . . .\n. . t . . t . . . . .\n" +
-      ". . . . . . . . . . .\n. . t . t t t t . . .\nt . . t . . . . . . .\n" +
-      ". . . . t . . t . . .\n";
-    System.out.println("Testing length-2 paths.");
-    System.out.println("The graph of length-2 paths is\n" +
-                       graph.length2Paths());
-    if (!t2String.equals(graph.length2Paths().toString())) {
-      System.out.println("Error:  the length-2 path graph should be\n" +
-                         t2String);
-      goodJob = false;
-    }
+  String t2String = "11 vertices and 25 edges\n. . . . t . t . . . t\n" +
+  ". . t . . t . . t . .\n. . . . . . . . t . .\nt . . . . . . t . t .\n" +
+  "t . . . . . . t . t .\n. t . . . . . . . . .\n. . t . . t . . . . .\n" +
+  ". . . . . . . . . . .\n. . t . t t t t . . .\nt . . t . . . . . . .\n" +
+  ". . . . t . . t . . .\n";
+  System.out.println("Testing length-2 paths.");
+  System.out.println("The graph of length-2 paths is\n" +
+   graph.length2Paths());
+  if (!t2String.equals(graph.length2Paths().toString())) {
+    System.out.println("Error:  the length-2 path graph should be\n" +
+     t2String);
+    goodJob = false;
+  }
 
     // Do length-3 paths work?
-    String t3String = "11 vertices and 34 edges\n. . t . t t t t . . .\n" +
-      "t . . . t . t t . t t\n. . . . t . t . . . t\n. t . . . . . . t . .\n" +
-      ". t . . . . . . t . .\nt . . t . . . . . . .\nt . . . . . . t . t .\n" +
-      ". . . . . . . . . . .\nt . t . t t . t . t .\n. . t . . t . . t . .\n" +
-      ". . t . . t . . . . .\n";
-    System.out.println("Testing length-3 paths.");
-    System.out.println("The graph of length-3 paths is\n" +
-                       graph.paths(3));
-    if (!t3String.equals(graph.paths(3).toString())) {
-      System.out.println("Error:  the length-3 path graph should be\n" +
-                         t3String);
-      goodJob = false;
-    }
+  String t3String = "11 vertices and 34 edges\n. . t . t t t t . . .\n" +
+  "t . . . t . t t . t t\n. . . . t . t . . . t\n. t . . . . . . t . .\n" +
+  ". t . . . . . . t . .\nt . . t . . . . . . .\nt . . . . . . t . t .\n" +
+  ". . . . . . . . . . .\nt . t . t t . t . t .\n. . t . . t . . t . .\n" +
+  ". . t . . t . . . . .\n";
+  System.out.println("Testing length-3 paths.");
+  System.out.println("The graph of length-3 paths is\n" +
+   graph.paths(3));
+  if (!t3String.equals(graph.paths(3).toString())) {
+    System.out.println("Error:  the length-3 path graph should be\n" +
+     t3String);
+    goodJob = false;
+  }
 
     // Do length-4 paths work?
-    String t4String = "11 vertices and 49 edges\nt . t . t t . t . t .\n" +
-      ". t t . t t t t t . .\n. . t . t t t t . . .\nt . . t t . t . . . t\n" +
-      "t . . t t . t . . . t\n. . t . . t . . t . .\n. t . . . . . . t . .\n" +
-      ". . . . . . . . . . .\nt t t . . t . t t t .\nt . . . t . t t . t t\n" +
-      "t . . . . . . t . t .\n";
-    System.out.println("Testing length-4 paths.");
-    System.out.println("The graph of length-4 paths is\n" +
-                       graph.paths(4));
-    if (!t4String.equals(graph.paths(4).toString())) {
-      System.out.println("Error:  the length-4 path graph should be\n" +
-                         t4String);
-      goodJob = false;
-    }
+  String t4String = "11 vertices and 49 edges\nt . t . t t . t . t .\n" +
+  ". t t . t t t t t . .\n. . t . t t t t . . .\nt . . t t . t . . . t\n" +
+  "t . . t t . t . . . t\n. . t . . t . . t . .\n. t . . . . . . t . .\n" +
+  ". . . . . . . . . . .\nt t t . . t . t t t .\nt . . . t . t t . t t\n" +
+  "t . . . . . . t . t .\n";
+  System.out.println("Testing length-4 paths.");
+  System.out.println("The graph of length-4 paths is\n" +
+   graph.paths(4));
+  if (!t4String.equals(graph.paths(4).toString())) {
+    System.out.println("Error:  the length-4 path graph should be\n" +
+     t4String);
+    goodJob = false;
+  }
 
     // Do length-5 paths work?
-    String t5String = "11 vertices and 63 edges\nt t t . . t . t t t .\n" +
-      "t . t t t t t t . t t\nt . t . t t . t . t .\n. . t . t t t t t . .\n" +
-      ". . t . t t t t t . .\nt . . . t . t t . t t\nt . . t t . t . . . t\n" +
-      ". . . . . . . . . . .\nt t . t t . t t t t t\n. t t . t t t t t . .\n" +
-      ". t . . . . . . t . .\n";
-    System.out.println("Testing length-5 paths.");
-    System.out.println("The graph of length-5 paths is\n" +
-                       graph.paths(5));
-    if (!t5String.equals(graph.paths(5).toString())) {
-      System.out.println("Error:  the length-5 path graph should be\n" +
-                         t5String);
-      goodJob = false;
-    }
-
-    if (goodJob) {
-      System.out.println(" *** Good Job! *** \n");
-    }
+  String t5String = "11 vertices and 63 edges\nt t t . . t . t t t .\n" +
+  "t . t t t t t t . t t\nt . t . t t . t . t .\n. . t . t t t t t . .\n" +
+  ". . t . t t t t t . .\nt . . . t . t t . t t\nt . . t t . t . . . t\n" +
+  ". . . . . . . . . . .\nt t . t t . t t t t t\n. t t . t t t t t . .\n" +
+  ". t . . . . . . t . .\n";
+  System.out.println("Testing length-5 paths.");
+  System.out.println("The graph of length-5 paths is\n" +
+   graph.paths(5));
+  if (!t5String.equals(graph.paths(5).toString())) {
+    System.out.println("Error:  the length-5 path graph should be\n" +
+     t5String);
+    goodJob = false;
   }
+
+  if (goodJob) {
+    System.out.println(" *** Good Job! *** \n");
+  }
+}
 }
