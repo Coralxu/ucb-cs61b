@@ -102,34 +102,34 @@ public class SplayTree implements Dictionary {
    **/
   private void rotateLeft(BinaryTreeNode node) {
     if (node == null || node.parent == null ||
-        node.parent.rightChild != node) {
+      node.parent.rightChild != node) {
       System.out.println("Illegal call to rotateLeft().  You have bug #2.");
-      return;
-    } 
+    return;
+  } 
 
-    BinaryTreeNode exParent = node.parent;
-    BinaryTreeNode subtreeParent = exParent.parent;
+  BinaryTreeNode exParent = node.parent;
+  BinaryTreeNode subtreeParent = exParent.parent;
 
     // Move "node"'s left subtree to its former parent.
-    exParent.rightChild = node.leftChild; 
-    if (node.leftChild != null) {
-      node.leftChild.parent = exParent;
-    }
+  exParent.rightChild = node.leftChild; 
+  if (node.leftChild != null) {
+    node.leftChild.parent = exParent;
+  }
 
     // Make exParent become a child of "node".
-    node.leftChild = exParent;
-    exParent.parent = node;
+  node.leftChild = exParent;
+  exParent.parent = node;
 
     // Make "node" become a child of exParent's former parent.
-    node.parent = subtreeParent;
-    if (subtreeParent == null) {
-      root = node;
-    } else if (subtreeParent.rightChild == exParent) {
-      subtreeParent.rightChild = node;
-    } else {
-      subtreeParent.leftChild = node;
-    }
+  node.parent = subtreeParent;
+  if (subtreeParent == null) {
+    root = node;
+  } else if (subtreeParent.rightChild == exParent) {
+    subtreeParent.rightChild = node;
+  } else {
+    subtreeParent.leftChild = node;
   }
+}
 
   /** 
    *  zig() rotates "node" up through its parent.  (Note that this may entail
@@ -178,6 +178,13 @@ public class SplayTree implements Dictionary {
    **/
   private void zigZig(BinaryTreeNode node) {
     // Write your solution to Part I of the lab here.
+    if (node == node.parent.leftChild) {
+      rotateRight(node.parent);
+      rotateRight(node);
+    } else {
+      rotateLeft(node.parent);
+      rotateLeft(node);
+    }
   }
 
   /**
@@ -190,7 +197,17 @@ public class SplayTree implements Dictionary {
     // When you do Part II of the lab, please replace the following faulty code
     // with your solution.
     while (node.parent != null) {
-      zig(node);
+      BinaryTreeNode exParent = node.parent;
+      if (exParent.parent != null) {
+        if ((exParent.parent.leftChild == exParent && exParent.leftChild == node)
+          || (exParent.parent.rightChild == exParent && exParent.rightChild == node)) {
+          zigZig(node);
+        } else {
+          zigZag(node);
+        }
+      } else {
+        zig(node);
+      }
     }
     // The following line isn't really necessary, as the rotations update the
     // root correctly if splayNode() successfully splays "node" to the root,
@@ -233,20 +250,20 @@ public class SplayTree implements Dictionary {
   private void insertHelper(Entry entry, Comparable key, BinaryTreeNode node) {
     if (key.compareTo(node.entry.key()) <= 0) {
       if (node.leftChild == null) {
-	node.leftChild = new BinaryTreeNode(entry, node);
-        splayNode(node.leftChild);
-      } else {
-	insertHelper(entry, key, node.leftChild);
-      }
-    } else {
-      if (node.rightChild == null) {
-	node.rightChild = new BinaryTreeNode(entry, node);
-        splayNode(node.rightChild);
-      } else {
-	insertHelper(entry, key, node.rightChild);
-      }
-    }
-  }
+       node.leftChild = new BinaryTreeNode(entry, node);
+       splayNode(node.leftChild);
+     } else {
+       insertHelper(entry, key, node.leftChild);
+     }
+   } else {
+    if (node.rightChild == null) {
+     node.rightChild = new BinaryTreeNode(entry, node);
+     splayNode(node.rightChild);
+   } else {
+     insertHelper(entry, key, node.rightChild);
+   }
+ }
+}
 
   /** 
    *  find() searches for an entry with the specified key.  If such an entry is
@@ -282,13 +299,13 @@ public class SplayTree implements Dictionary {
     }
 
     if (key.compareTo(node.entry.key()) < 0) {  // "key" < "node"'s key
-      if (node.leftChild == null) {
+    if (node.leftChild == null) {
         splayNode(node);  // Splay the last node visited to the root.
         return null;
       }
       return findHelper(key, node.leftChild);
     } else if (key.compareTo(node.entry.key()) > 0) { // "key" > "node"'s key
-      if (node.rightChild == null) {
+    if (node.rightChild == null) {
         splayNode(node);  // Splay the last node visited to the root.
         return null;
       }
@@ -356,7 +373,7 @@ public class SplayTree implements Dictionary {
     tree.insert(new Integer(3), "O");
     Entry testEntry = tree.insert(new Integer(2), "O");
     BinaryTreeNode testNode =
-      tree.findHelper((Comparable) testEntry.key, tree.root);
+    tree.findHelper((Comparable) testEntry.key, tree.root);
     tree.insert(new Integer(5), "J");
     tree.insert(new Integer(4), "D");
     tree.insert(new Integer(7), "B");
@@ -371,60 +388,60 @@ public class SplayTree implements Dictionary {
       System.out.println("Tree 1 is now:  " + tree);
       shouldBe = "(1G)2O((3O)4D((5J)6O(7B)))";
       if (tree.toString().equals(shouldBe)) {
-	System.out.println("  Zig-zig successful.");
-      } else {
-	System.out.println("  ERROR:  SHOULD BE " + shouldBe);
-      }
-      System.out.println("\nAttempting to balance an unbalanced tree using only zig():");
-      SplayTree unbalanced = new SplayTree();
-      makeUnbalancedTree(unbalanced);
-      System.out.println("\nInserting 10A, 9B, 8C, 7D, 6E, 5F, 4G, 3H, 2I, 1J");
-      System.out.println("tree is:  " + unbalanced);
-      shouldBe = "1J(2I(3H(4G(5F(6E(7D(8C(9B(10A)))))))))";
-      if (!unbalanced.toString().equals(shouldBe)) {
-	System.out.println("  ERROR:  SHOULD BE " + shouldBe);
-      }
-      unbalanced.testFind(10, "A");
-      System.out.println("Tree 1 is now:  " + unbalanced);
-      shouldBe = "(1J(2I(3H(4G(5F(6E(7D(8C(9B)))))))))10A";
-      if (!unbalanced.toString().equals(shouldBe)) {
-	System.out.println("  ERROR:  SHOULD BE " + shouldBe);
-      } else {
-        System.out.println("As you can see, the tree is still unbalanced.\n" +
-                           "If there are no errors, go on to Part II.");
-      }
-    } else {
-      System.out.println("ERROR:  splayNode() is returning incorrect results.");
+       System.out.println("  Zig-zig successful.");
+     } else {
+       System.out.println("  ERROR:  SHOULD BE " + shouldBe);
+     }
+     System.out.println("\nAttempting to balance an unbalanced tree using only zig():");
+     SplayTree unbalanced = new SplayTree();
+     makeUnbalancedTree(unbalanced);
+     System.out.println("\nInserting 10A, 9B, 8C, 7D, 6E, 5F, 4G, 3H, 2I, 1J");
+     System.out.println("tree is:  " + unbalanced);
+     shouldBe = "1J(2I(3H(4G(5F(6E(7D(8C(9B(10A)))))))))";
+     if (!unbalanced.toString().equals(shouldBe)) {
+       System.out.println("  ERROR:  SHOULD BE " + shouldBe);
+     }
+     unbalanced.testFind(10, "A");
+     System.out.println("Tree 1 is now:  " + unbalanced);
+     shouldBe = "(1J(2I(3H(4G(5F(6E(7D(8C(9B)))))))))10A";
+     if (!unbalanced.toString().equals(shouldBe)) {
+       System.out.println("  ERROR:  SHOULD BE " + shouldBe);
+     } else {
+      System.out.println("As you can see, the tree is still unbalanced.\n" +
+       "If there are no errors, go on to Part II.");
     }
+  } else {
+    System.out.println("ERROR:  splayNode() is returning incorrect results.");
+  }
 
-    System.out.println("\nPART II:  Testing splayNode()");
+  System.out.println("\nPART II:  Testing splayNode()");
 
-    System.out.println("\nCalling splayNode() on the unbalanced tree:\n");
-    System.out.println("Inserting 10A, 9B, 8C, 7D, 6E, 5F, 4G, 3H, 2I, 1J");
-    SplayTree splayTest = new SplayTree();
-    makeUnbalancedTree(splayTest);
-    System.out.println("tree is:  " + splayTest);
-    splayTest.testFind(10, "A");
-    System.out.println("The tree should be better balanced now: " + splayTest);
-    shouldBe = "(1J((2I)3H((4G)5F((6E)7D((8C)9B)))))10A";
-    if (!splayTest.toString().equals(shouldBe)) {
-      System.out.println("  ERROR:  SHOULD BE " + shouldBe);
-    }
+  System.out.println("\nCalling splayNode() on the unbalanced tree:\n");
+  System.out.println("Inserting 10A, 9B, 8C, 7D, 6E, 5F, 4G, 3H, 2I, 1J");
+  SplayTree splayTest = new SplayTree();
+  makeUnbalancedTree(splayTest);
+  System.out.println("tree is:  " + splayTest);
+  splayTest.testFind(10, "A");
+  System.out.println("The tree should be better balanced now: " + splayTest);
+  shouldBe = "(1J((2I)3H((4G)5F((6E)7D((8C)9B)))))10A";
+  if (!splayTest.toString().equals(shouldBe)) {
+    System.out.println("  ERROR:  SHOULD BE " + shouldBe);
+  }
 
-    System.out.println("\nSome find() operations on a new tree to test splayNode():\n");
-    System.out.println("Inserting 3A, 7B, 4C, 2D, 9E, 1F");
-    SplayTree tree2 = new SplayTree();
-    tree2.insert(new Integer(3), "A");
-    tree2.insert(new Integer(7), "B");
-    tree2.insert(new Integer(4), "C");
-    tree2.insert(new Integer(2), "D");
-    tree2.insert(new Integer(9), "E");
-    tree2.insert(new Integer(1), "F");
-    System.out.println("Tree 2 is:  " + tree2);
-    shouldBe = "1F((2D(3A((4C)7B)))9E)";
-    if (!tree2.toString().equals(shouldBe)) {
-      System.out.println("  ERROR:  SHOULD BE " + shouldBe);
-    }
+  System.out.println("\nSome find() operations on a new tree to test splayNode():\n");
+  System.out.println("Inserting 3A, 7B, 4C, 2D, 9E, 1F");
+  SplayTree tree2 = new SplayTree();
+  tree2.insert(new Integer(3), "A");
+  tree2.insert(new Integer(7), "B");
+  tree2.insert(new Integer(4), "C");
+  tree2.insert(new Integer(2), "D");
+  tree2.insert(new Integer(9), "E");
+  tree2.insert(new Integer(1), "F");
+  System.out.println("Tree 2 is:  " + tree2);
+  shouldBe = "1F((2D(3A((4C)7B)))9E)";
+  if (!tree2.toString().equals(shouldBe)) {
+    System.out.println("  ERROR:  SHOULD BE " + shouldBe);
+  }
     // tree2.testRemove(2, "(1F(3A((4C)7B)))9E");
     // tree2.testRemove(4, "((1F)3A)7B(9E)");
     // tree2.testFind(1, "F");
@@ -433,48 +450,48 @@ public class SplayTree implements Dictionary {
     // if (!tree2.toString().equals(shouldBe)) {
     //   System.out.println("  ERROR:  SHOULD BE " + shouldBe);
     // }
-    tree2.testFind(7, "B");
-    System.out.println("Tree 2 is:  " + tree2);
-    shouldBe = "(1F((2D)3A(4C)))7B(9E)";
-    if (!tree2.toString().equals(shouldBe)) {
-      System.out.println("  ERROR:  SHOULD BE " + shouldBe);
-    }
-    tree2.testFind(4, "C");
-    System.out.println("Tree 2 is:  " + tree2);
-    shouldBe = "((1F(2D))3A)4C(7B(9E))";
-    if (!tree2.toString().equals(shouldBe)) {
-      System.out.println("  ERROR:  SHOULD BE " + shouldBe);
-    }
+  tree2.testFind(7, "B");
+  System.out.println("Tree 2 is:  " + tree2);
+  shouldBe = "(1F((2D)3A(4C)))7B(9E)";
+  if (!tree2.toString().equals(shouldBe)) {
+    System.out.println("  ERROR:  SHOULD BE " + shouldBe);
   }
-
-  private void testRemove(int n, String shouldBe) {
-    Integer key = new Integer(n);
-    System.out.print("After remove(" + n + "):  ");
-    remove(key);
-    System.out.println(this);
-    if (!toString().equals(shouldBe)) {
-      System.out.println("  SHOULD BE " + shouldBe);
-    }
+  tree2.testFind(4, "C");
+  System.out.println("Tree 2 is:  " + tree2);
+  shouldBe = "((1F(2D))3A)4C(7B(9E))";
+  if (!tree2.toString().equals(shouldBe)) {
+    System.out.println("  ERROR:  SHOULD BE " + shouldBe);
   }
+}
 
-  private void testFind(int n, Object truth) {
-    Integer key = new Integer(n);
-    Entry entry = find(key);
-    System.out.println("Calling find(" + n + ")");
-    if (entry == null) {
-      System.out.println("  returned null.");
-      if (truth != null) {
+private void testRemove(int n, String shouldBe) {
+  Integer key = new Integer(n);
+  System.out.print("After remove(" + n + "):  ");
+  remove(key);
+  System.out.println(this);
+  if (!toString().equals(shouldBe)) {
+    System.out.println("  SHOULD BE " + shouldBe);
+  }
+}
+
+private void testFind(int n, Object truth) {
+  Integer key = new Integer(n);
+  Entry entry = find(key);
+  System.out.println("Calling find(" + n + ")");
+  if (entry == null) {
+    System.out.println("  returned null.");
+    if (truth != null) {
+      System.out.println("  SHOULD BE " + truth + ".");
+    }
+  } else {
+    System.out.println("  returned " + entry.value() + ".");
+    if (!entry.value().equals(truth)) {
+      if (truth == null) {
+        System.out.println("  SHOULD BE null.");
+      } else {
         System.out.println("  SHOULD BE " + truth + ".");
       }
-    } else {
-      System.out.println("  returned " + entry.value() + ".");
-      if (!entry.value().equals(truth)) {
-        if (truth == null) {
-          System.out.println("  SHOULD BE null.");
-        } else {
-          System.out.println("  SHOULD BE " + truth + ".");
-        }
-      }
     }
   }
+}
 }
