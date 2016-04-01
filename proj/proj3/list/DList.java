@@ -4,127 +4,212 @@ package list;
 
 /**
  *  A DList is a mutable doubly-linked list ADT.  Its implementation is
- *  circularly-linked and employs a sentinel node at the head of the list.
+ *  circularly-linked and employs a sentinel (dummy) node at the head
+ *  of the list.
  *
  *  DO NOT CHANGE ANY METHOD PROTOTYPES IN THIS FILE.
- **/
+ */
 
-public class DList extends List {
+public class DList {
 
   /**
-   *  (inherited)  size is the number of items in the list.
    *  head references the sentinel node.
-   *  Note that the sentinel node does not store an item, and is not included
-   *  in the count stored by the "size" field.
+   *  size is the number of items in the list.  (The sentinel node does not
+   *       store an item.)
    *
-   *  DO NOT CHANGE THE FOLLOWING FIELD DECLARATION.
-   **/
+   *  DO NOT CHANGE THE FOLLOWING FIELD DECLARATIONS.
+   */
 
   protected DListNode head;
+  protected int size;
 
   /* DList invariants:
    *  1)  head != null.
-   *  2)  For every DListNode x in a DList, x.next != null.
-   *  3)  For every DListNode x in a DList, x.prev != null.
-   *  4)  For every DListNode x in a DList, if x.next == y, then y.prev == x.
-   *  5)  For every DListNode x in a DList, if x.prev == y, then y.next == x.
-   *  6)  For every DList l, l.head.myList = null.  (Note that l.head is the
-   *      sentinel.)
-   *  7)  For every DListNode x in a DList l EXCEPT l.head (the sentinel),
-   *      x.myList = l.
-   *  8)  size is the number of DListNodes, NOT COUNTING the sentinel,
+   *  2)  For any DListNode x in a DList, x.next != null.
+   *  3)  For any DListNode x in a DList, x.prev != null.
+   *  4)  For any DListNode x in a DList, if x.next == y, then y.prev == x.
+   *  5)  For any DListNode x in a DList, if x.prev == y, then y.next == x.
+   *  6)  size is the number of DListNodes, NOT COUNTING the sentinel,
    *      that can be accessed from the sentinel (head) by a sequence of
    *      "next" references.
-   **/
+   */
 
   /**
-   *  newNode() calls the DListNode constructor.  Use this method to allocate
+   *  newNode() calls the DListNode constructor.  Use this class to allocate
    *  new DListNodes rather than calling the DListNode constructor directly.
-   *  That way, only this method need be overridden if a subclass of DList
+   *  That way, only this method needs to be overridden if a subclass of DList
    *  wants to use a different kind of node.
-   *
    *  @param item the item to store in the node.
-   *  @param list the list that owns this node.  (null for sentinels.)
    *  @param prev the node previous to this node.
    *  @param next the node following this node.
-   **/
-  protected DListNode newNode(Object item, DList list,
-                              DListNode prev, DListNode next) {
-    return new DListNode(item, list, prev, next);
+   */
+  protected DListNode newNode(Object item, DListNode prev, DListNode next) {
+    return new DListNode(item, prev, next);
   }
 
   /**
-   *  DList() constructs for an empty DList.
-   **/
+   *  DList() constructor for an empty DList.
+   */
   public DList() {
-    // Your solution here.  Similar to Homework 4, but now you need to specify
-    //   the `list' field (second parameter) as well.
-    head = newNode(null, null, null, null);
+    //  Your solution here.
+    head = newNode(null,null,null);
     head.next = head;
     head.prev = head;
     size = 0;
   }
 
   /**
-   *  insertFront() inserts an item at the front of this DList.
-   *
-   *  @param item is the item to be inserted.
-   *
+   *  isEmpty() returns true if this DList is empty, false otherwise.
+   *  @return true if this DList is empty, false otherwise. 
    *  Performance:  runs in O(1) time.
-   **/
+   */
+  public boolean isEmpty() {
+    return size == 0;
+  }
+
+  /** 
+   *  length() returns the length of this DList. 
+   *  @return the length of this DList.
+   *  Performance:  runs in O(1) time.
+   */
+  public int length() {
+    return size;
+  }
+
+  /**
+   *  insertFront() inserts an item at the front of this DList.
+   *  @param item is the item to be inserted.
+   *  Performance:  runs in O(1) time.
+   */
   public void insertFront(Object item) {
-    // Your solution here.  Similar to Homework 4, but now you need to specify
-    //   the `list' field (second parameter) as well.
-    DListNode node = newNode(item, this, head, head.next);
-    head.next.prev = node;
-    head.next = node;
+    // Your solution here.
+    DListNode newFront = newNode(item,head,head.next);
+    head.next.prev = newFront;
+    head.next = newFront;
     size++;
   }
 
   /**
    *  insertBack() inserts an item at the back of this DList.
-   *
    *  @param item is the item to be inserted.
-   *
    *  Performance:  runs in O(1) time.
-   **/
+   */
   public void insertBack(Object item) {
-    // Your solution here.  Similar to Homework 4, but now you need to specify
-    //   the `list' field (second parameter) as well.
-    DListNode node = newNode(item, this, head.prev, head);
-    head.prev.next = node;
-    head.prev = node;
+    // Your solution here.
+    DListNode newBack = newNode(item,head.prev,head);
+    head.prev.next = newBack;
+    head.prev = newBack;
     size++;
   }
 
   /**
    *  front() returns the node at the front of this DList.  If the DList is
-   *  empty, return an "invalid" node--a node with the property that any
-   *  attempt to use it will cause an exception.  (The sentinel is "invalid".)
+   *  empty, return null.
    *
-   *  DO NOT CHANGE THIS METHOD.
+   *  Do NOT return the sentinel under any circumstances!
    *
-   *  @return a ListNode at the front of this DList.
-   *
+   *  @return the node at the front of this DList.
    *  Performance:  runs in O(1) time.
    */
-  public ListNode front() {
-    return head.next;
+  public DListNode front() {
+    // Your solution here.
+    if (isEmpty()) {
+      return null;
+    } else {
+      return head.next;
+    }
   }
 
   /**
    *  back() returns the node at the back of this DList.  If the DList is
-   *  empty, return an "invalid" node--a node with the property that any
-   *  attempt to use it will cause an exception.  (The sentinel is "invalid".)
+   *  empty, return null.
    *
-   *  DO NOT CHANGE THIS METHOD.
+   *  Do NOT return the sentinel under any circumstances!
    *
-   *  @return a ListNode at the back of this DList.
-   *
+   *  @return the node at the back of this DList.
    *  Performance:  runs in O(1) time.
    */
-  public ListNode back() {
-    return head.prev;
+  public DListNode back() {
+    // Your solution here.
+    if (isEmpty()) {
+      return null;
+    } else {
+      return head.prev;
+    }
+  }  
+
+  /**
+   *  insertAfter() inserts an item in this DList immediately following "node".
+   *  If "node" is null, do nothing.
+   *  @param item the item to be inserted.
+   *  @param node the node to insert the item after.
+   *  Performance:  runs in O(1) time.
+   */
+  public void insertAfter(Object item, DListNode node) {
+    // Your solution here.
+    if (node == null) {
+      return;
+    } else {
+      DListNode newNode = newNode(item,node,node.next);
+      node.next.prev = newNode;
+      node.next = newNode;
+      size++;
+    }
+  }
+
+  /**
+   *  insertBefore() inserts an item in this DList immediately before "node".
+   *  If "node" is null, do nothing.
+   *  @param item the item to be inserted.
+   *  @param node the node to insert the item before.
+   *  Performance:  runs in O(1) time.
+   */
+  public void insertBefore(Object item, DListNode node) {
+    // Your solution here.
+    if (node == null) {
+      return;
+    } else {
+      DListNode newNode = newNode(item,node.prev,node);
+      node.prev.next = newNode;
+      node.prev = newNode;
+      size++;
+    }
+  }
+
+   /**
+   *  next() returns the node following "node" in this DList.  If "node" is
+   *  null, or "node" is the last node in this DList, return null.
+   *
+   *  Do NOT return the sentinel under any circumstances!
+   *
+   *  @param node the node whose successor is sought.
+   *  @return the node following "node".
+   *  Performance:  runs in O(1) time.
+   */
+  public DListNode next(DListNode node) {
+    // Your solution here.
+    if ((node == null) || (node.next == head)) {
+      return null;
+    } else {
+      return node.next;
+    }
+  }
+
+  /**
+   *  remove() removes "node" from this DList.  If "node" is null, do nothing.
+   *  Performance:  runs in O(1) time.
+   */
+  public void remove(DListNode node) {
+    // Your solution here.
+    if (node == null) {
+      return;
+    } else {
+      node.prev.next = node.next;
+      node.next.prev = node.prev;
+      node.next = null;
+      node.prev = null;
+      size--;
+    }
   }
 
   /**
@@ -133,7 +218,6 @@ public class DList extends List {
    *  DO NOT CHANGE THIS METHOD.
    *
    *  @return a String representation of this DList.
-   *
    *  Performance:  runs in O(n) time, where n is the length of the list.
    */
   public String toString() {
@@ -146,120 +230,5 @@ public class DList extends List {
     return result + "]";
   }
 
-  private static void testInvalidNode(ListNode p) {
-    System.out.println("p.isValidNode() should be false: " + p.isValidNode());
-    try {
-      p.item();
-      System.out.println("p.item() should throw an exception, but didn't.");
-    } catch (InvalidNodeException lbe) {
-      System.out.println("p.item() should throw an exception, and did.");
-    }
-    try {
-      p.setItem(new Integer(0));
-      System.out.println("p.setItem() should throw an exception, but didn't.");
-    } catch (InvalidNodeException lbe) {
-      System.out.println("p.setItem() should throw an exception, and did.");
-    }
-    try {
-      p.next();
-      System.out.println("p.next() should throw an exception, but didn't.");
-    } catch (InvalidNodeException lbe) {
-      System.out.println("p.next() should throw an exception, and did.");
-    }
-    try {
-      p.prev();
-      System.out.println("p.prev() should throw an exception, but didn't.");
-    } catch (InvalidNodeException lbe) {
-      System.out.println("p.prev() should throw an exception, and did.");
-    }
-    try {
-      p.insertBefore(new Integer(1));
-      System.out.println("p.insertBefore() should throw an exception, but " +
-                         "didn't.");
-    } catch (InvalidNodeException lbe) {
-      System.out.println("p.insertBefore() should throw an exception, and did."
-                         );
-    }
-    try {
-      p.insertAfter(new Integer(1));
-      System.out.println("p.insertAfter() should throw an exception, but " +
-                         "didn't.");
-    } catch (InvalidNodeException lbe) {
-      System.out.println("p.insertAfter() should throw an exception, and did."
-                         );
-    }
-    try {
-      p.remove();
-      System.out.println("p.remove() should throw an exception, but didn't.");
-    } catch (InvalidNodeException lbe) {
-      System.out.println("p.remove() should throw an exception, and did.");
-    }
-  }
 
-  private static void testEmpty() {
-    List l = new DList();
-    System.out.println("An empty list should be [  ]: " + l);
-    System.out.println("l.isEmpty() should be true: " + l.isEmpty());
-    System.out.println("l.length() should be 0: " + l.length());
-    System.out.println("Finding front node p of l.");
-    ListNode p = l.front();
-    testInvalidNode(p);
-    System.out.println("Finding back node p of l.");
-    p = l.back();
-    testInvalidNode(p);
-    l.insertFront(new Integer(10));
-    System.out.println("l after insertFront(10) should be [  10  ]: " + l);
-  }
-
-  public static void main(String[] argv) {
-    testEmpty();
-    List l = new DList();
-    l.insertFront(new Integer(3));
-    l.insertFront(new Integer(2));
-    l.insertFront(new Integer(1));
-    System.out.println("l is a list of 3 elements: " + l);
-    try {
-      ListNode n;
-      int i = 1;
-      for (n = l.front(); n.isValidNode(); n = n.next()) {
-	System.out.println("n.item() should be " + i + ": " + n.item());
-        n.setItem(new Integer(((Integer) n.item()).intValue() * 2));
-	System.out.println("n.item() should be " + 2 * i + ": " + n.item());
-	i++;
-      }
-      System.out.println("After doubling all elements of l: " + l);
-      testInvalidNode(n);
-
-      i = 6;
-      for (n = l.back(); n.isValidNode(); n = n.prev()) {
-	System.out.println("n.item() should be " + i + ": " + n.item());
-	n.setItem(new Integer(((Integer) n.item()).intValue() * 2));
-	System.out.println("n.item() should be " + 2 * i + ": " + n.item());
-	i = i - 2;
-      }
-      System.out.println("After doubling all elements of l again: " + l);
-      testInvalidNode(n);
-
-      n = l.front().next();
-      System.out.println("Removing middle element (8) of l: " + n.item());
-      n.remove();
-      System.out.println("l is now: " + l);
-      testInvalidNode(n);    
-      n = l.back();
-      System.out.println("Removing end element (12) of l: " + n.item());
-      n.remove();
-      System.out.println("l is now: " + l);
-      testInvalidNode(n);    
-
-      n = l.front();
-      System.out.println("Removing first element (4) of l: " + n.item());
-      n.remove();
-      System.out.println("l is now: " + l);
-      testInvalidNode(n);    
-    } catch (InvalidNodeException lbe) {
-      System.err.println ("Caught InvalidNodeException that should not happen."
-                          );
-      System.err.println ("Aborting the testing code.");
-    }
-  }
 }

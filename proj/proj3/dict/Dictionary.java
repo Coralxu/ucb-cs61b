@@ -2,8 +2,6 @@
 
 package dict;
 
-import list.*;
-
 /**
  *  An interface for (unordered) dictionary ADTs.
  *
